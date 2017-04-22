@@ -56,6 +56,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Museum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="fshader.glsl">
@@ -75,6 +78,15 @@
     </None>
     <None Include="pvshader.glsl">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="vshad.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fshad.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="cshader.glsl">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

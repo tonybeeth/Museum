@@ -2,6 +2,11 @@
 #include "soil.h"
 #include <fstream>
 
+Object::Object()
+{
+
+}
+
 Object::Object(const char* filename)
 {
 	LoadFile(filename); 

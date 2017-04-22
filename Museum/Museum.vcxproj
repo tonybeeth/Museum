@@ -156,16 +156,20 @@
     <ClCompile Include="InitShader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Museum.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cshader.glsl" />
+    <None Include="fshad.glsl" />
     <None Include="fshader.glsl" />
     <None Include="pfshader.glsl" />
     <None Include="pvshader.glsl" />
     <None Include="sky_fshader.glsl" />
     <None Include="sky_vshader.glsl" />
+    <None Include="vshad.glsl" />
     <None Include="vshader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

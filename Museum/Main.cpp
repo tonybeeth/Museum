@@ -10,6 +10,9 @@
 #include"Museum.h"
 #include"Camera.h"
 #include"SkyBox.h"
+#include<ctime>
+#include<cstdlib>
+#include<fstream>
 
 #pragma comment(lib,"glew32.lib")
 #pragma comment(lib,"SOIL.lib")
@@ -35,7 +38,7 @@ GLfloat bmax;// The maximum width of the three directions of the bounding box
 vec4 eye, //eye position for perspective projections
 cb;// Center of bounding box obtained from object
 
-GLuint program;
+GLuint program, particlesProgram;
 
 // Global lighting initializations
 vec4 light_position(0.0, 0.0, 0.0, 1.0);//infinite light source ie vector
@@ -48,27 +51,185 @@ vec3 light_specular(0.4, .4, .4);
 // There is also a paper on using CUDA to handle the loading
 // Also note that the loaded models better not overfile the capacity of the GPU card
 
-Museum museum;
+//Museum museum;
 bool SWITCH = true;
 Camera camera;
-SkyBox skybox;
+//SkyBox skybox;
+Object sphere;
+#define NUM_PARTICLES 1024*1024  //number of particles to move
+#define WORK_GROUP_SIZE 128		//number of work items per work group
+GLuint particlesVao;
+GLuint posSSbo, velSSbo, colSSbo;
+
+string readShaderSource(const char* shaderFile)
+{
+	ifstream t("cshader.glsl");
+	string str;
+
+	t.seekg(0, std::ios::end);
+	str.reserve(t.tellg());
+	t.seekg(0, std::ios::beg);
+
+	str.assign((std::istreambuf_iterator<char>(t)),
+		std::istreambuf_iterator<char>());
+
+	return str;
+}
+
+// Create a GLSL program object from vertex and fragment shader files
+GLuint
+InitComputeShader(const char* cShaderFile)
+{
+	struct Shader {
+		const char*  filename;
+		GLenum       type;
+		GLchar*      source;
+	}  shaders[1] = {
+		{ cShaderFile, GL_COMPUTE_SHADER, NULL }
+	};
+
+	GLuint program = glCreateProgram();
+
+	for (int i = 0; i < 1; ++i) {
+		Shader& s = shaders[i];
+		string str = readShaderSource(s.filename);
+		const char* source = str.c_str();
+		if (source == NULL) {
+			std::cerr << "Failed to read " << s.filename << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		GLuint shader = glCreateShader(s.type);
+		glShaderSource(shader, 1, (const GLchar**)&source, NULL);
+		glCompileShader(shader);
+
+		GLint  compiled;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+		if (!compiled) {
+			std::cerr << s.filename << " failed to compile:" << std::endl;
+			GLint  logSize;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSize);
+			char* logMsg = new char[logSize];
+			glGetShaderInfoLog(shader, logSize, NULL, logMsg);
+			std::cerr << logMsg << std::endl;
+			delete[] logMsg;
+
+			exit(EXIT_FAILURE);
+		}
+
+		//delete[] s.source;
+
+		glAttachShader(program, shader);
+	}
+
+	/* link  and error check */
+	glLinkProgram(program);
+
+	GLint  linked;
+	glGetProgramiv(program, GL_LINK_STATUS, &linked);
+	if (!linked) {
+		std::cerr << "Shader program failed to link" << std::endl;
+		GLint  logSize;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logSize);
+		char* logMsg = new char[logSize];
+		glGetProgramInfoLog(program, logSize, NULL, logMsg);
+		std::cerr << logMsg << std::endl;
+		delete[] logMsg;
+
+		exit(EXIT_FAILURE);
+	}
+
+	/* use program object */
+	glUseProgram(program);
+
+	return program;
+}
+
+void SetupParticles()
+{
+	//generate and bind vao for particles
+	glGenVertexArrays(1, &particlesVao);
+	glBindVertexArray(particlesVao);
+
+	//generate and bind buffers for particles
+	glGenBuffers(1, &posSSbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, posSSbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
+
+	GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; //the invalidate makes a big difference when rewriting???
+	vec4* points = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
+
+	float FMIN = -1.0, FMAX = 1.0;
+	srand(time(NULL));//set seed
+
+	for (int i = 0; i < NUM_PARTICLES; ++i) {
+		points[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		points[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		points[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		points[i].w = 1;
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+	FMIN = 0.0, FMAX = 1.0;
+	//generate and bind buffer for particles' velocities
+	glGenBuffers(1, &velSSbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, velSSbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
+
+	vec4* vels = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
+
+	srand(time(NULL));//set seed
+	for (int i = 0; i < NUM_PARTICLES; ++i) {
+		vels[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		vels[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		vels[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		vels[i].w = 1;
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+	//generate and bind buffer for particles' color
+	glGenBuffers(1, &colSSbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, colSSbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
+
+	vec4* cols = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
+
+	srand(time(NULL));//set seed
+	for (int i = 0; i < NUM_PARTICLES; ++i) {
+		cols[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		cols[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		cols[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
+		cols[i].w = 1;
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+	//Initialize compute shader program
+	particlesProgram = InitComputeShader("cshader.glsl");
+
+	glBindVertexArray(0);
+}
 
 //OpenGL initialization
 void
 init()
 {
-	skybox.Init("hw_lagoon");
+	//skybox.Init("hw_lagoon");
 
 	// Load shaders and use the resulting shader program
-	program = InitShader("vshader.glsl", "fshader.glsl");
+	program = InitShader("vshad.glsl", "fshad.glsl");
 	glUseProgram(program);
 
-	museum.Load(program);
+	//museum.Load(program);
+	sphere.LoadFile("sphere.obj");
+	sphere.Load(program);
 	
-	bmax = museum.models[5].MaxWidth();
-	cb = museum.models[5].BoxCenter();
+	//bmax = museum.models[5].MaxWidth();
+	//cb = museum.models[5].BoxCenter();
+	bmax = sphere.MaxWidth();
+	cb = sphere.BoxCenter();
 
-	camera = Camera(vec3(0.0, 2, cb.z+bmax/2), vec3(0.0, 2, cb.z-bmax));
+	//camera = Camera(vec3(0.0, 2, cb.z+bmax/2), vec3(0.0, 2, cb.z-bmax));
+	camera = Camera(vec3(0.0, 2, cb.z + bmax * 2), vec3(cb.x,cb.y,cb.z));
 	pnear = .01;
 	pfar = pnear + 10 * -bmax;
 
@@ -86,6 +247,8 @@ init()
 	ModelViewLoc = glGetUniformLocation(program, "ModelView");
 	ProjectionLoc = glGetUniformLocation(program, "Projection");
 	
+	SetupParticles();
+
 	glEnable(GL_DEPTH_TEST);// Turn this off and see what happens. 
 
 	//Face culling
@@ -134,8 +297,31 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 	return true;
 }
 
+void displayParticles()
+{
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, posSSbo);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, velSSbo);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, colSSbo);
+
+	//Invoke compute shader
+	glUseProgram(particlesProgram);
+	glDispatchCompute(NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1);
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	//render updated values
+	glUseProgram(program);
+	glBindVertexArray(particlesVao);
+	glBindBuffer(GL_ARRAY_BUFFER, posSSbo);
+	glVertexPointer(4, GL_FLOAT, 0, (void*)0);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 //----------------------------------------------------------------------------
-long long frame = 0, time, timebase, fps;
+long long frame = 0, curTime, timebase, fps;
 void
 display(void)
 {
@@ -143,20 +329,25 @@ display(void)
 
 	camera.Step();
 	model_view = LookAt(camera.position(), camera.viewPosition(), camera.Up());
-	skybox.Draw();
+	glUseProgram(program);
+	glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
+	//skybox.Draw();
 
 	//glUseProgram(program);
-	museum.Draw(GL_TRIANGLES, ModelViewLoc, &frustumCull);
+	//museum.Draw(GL_TRIANGLES, ModelViewLoc, &frustumCull);
+	sphere.Draw(GL_TRIANGLES);
+
+	displayParticles();
 
 	//Build the window header with time and projection info
 	frame++;
-	time = glutGet(GLUT_ELAPSED_TIME);
+	curTime = glutGet(GLUT_ELAPSED_TIME);
 	string display_string;
-	if (time - timebase>1000) {
-		fps = frame*1000.0 / (time - timebase);
+	if (curTime - timebase>1000) {
+		fps = frame*1000.0 / (curTime - timebase);
 		display_string = "Anthony’s Museum Project: PROJECTION= " + projName + " : FPS= " + to_string(fps);
 		glutSetWindowTitle(display_string.c_str());
-		timebase = time;
+		timebase = curTime;
 		frame = 0;
 	}
 	glutSwapBuffers();

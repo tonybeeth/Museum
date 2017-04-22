@@ -21,6 +21,7 @@ private:
 public:
 	vector<vec3> boundBox;
 	Object(const char* filename);
+	Object();
 	~Object(void);
 	bool LoadFile(const char* filename);
 	bool Load(GLuint & program);
