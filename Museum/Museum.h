@@ -7,7 +7,7 @@
 
 class Museum
 {
-	enum {WALL, DOOR, LAMP_HOLDER, FRAME, BENCH, BASE, STEP, STEP2, AMENEMHAT, CUBE};
+	enum {WALL, DOOR, LAMP_HOLDER, BENCH, FRAME, BASE, STEP, STEP2, AMENEMHAT, CUBE};
 
 private:
 	int NumModulars;

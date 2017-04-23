@@ -1,4 +1,4 @@
-#version 150
+#version 430 compatibility
 
 // This is a Phong fragment shader 
 in  vec4 vPosition;
@@ -7,10 +7,12 @@ in  vec2 Texcoord;
 in vec3 N;
 in vec3 L;
 in vec3 E;
+in vec4 pcolor;
 
 out  vec4 fColor;
 uniform sampler2D tex;
 uniform bool textureused;
+uniform bool particle;
 
 uniform vec3 LAmbient, LDiffuse, LSpecular; 
 
@@ -18,6 +20,11 @@ uniform vec3 MAmbient, MDiffuse, MSpecular;
 uniform mat4 ModelView;
 uniform vec4 LightPosition;
 uniform float Shininess;
+
+layout( std140, binding=6) buffer Col
+{
+	vec4 Colors[ ];
+};
 
 void main()
 {
@@ -39,9 +46,14 @@ void main()
 
 	color += vec4(ambient + diffuse + specular,1.0);
 	  
-
-	if(textureused)
-		fColor =(color*texture(tex, Texcoord));
-	else
-		fColor = color;// there is no texture so just use the color
+	if(particle){
+		fColor = pcolor;
+	}
+	else{
+		if(textureused)
+			fColor =(color*texture(tex, Texcoord));
+		else
+			fColor = color;// there is no texture so just use the color
+		fColor = vec4(0.0,0.0,0.0,1.0);
+	}
 }

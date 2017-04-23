@@ -26,8 +26,8 @@ void Museum::Load(GLuint program)
 	glUseProgram(program);
 
 	//vector of object files
-	vector<string> objNames = { "wall.obj", "door.obj", "lamp_holder.obj",  "frame.obj", "woodBench.obj", "base1.obj",
-		"stairs.obj", "wood_step.obj", "amenemhat.obj", "cube.obj" };
+	vector<string> objNames = { "wall.obj", "door.obj", "lamp_holder.obj", "woodBench.obj", "Frame-1.obj", 
+		"base1.obj", "stairs.obj", "wood_step.obj", "amenemhat.obj", "cube.obj" };
 
 	vector<string> LightSourceNames = { "sphere_bulb1.obj", "sphere_bulb2.obj", "sphere_bulb3.obj", "sphere_bulb4.obj",
 		"cone_bulb1.obj", "cone_bulb2.obj", "cone_bulb3.obj", "cone_bulb4.obj"
@@ -111,8 +111,8 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 
 			if (i == frameDataIdx && frameIdx < 10) {
 				//set texturing vars for frames
-				models[i].meshes[0].textureAvailable = true;
-				models[i].meshes[0].texture = move(frameTextures[frameIdx]);
+				models[i].meshes[1].textureAvailable = true;
+				models[i].meshes[1].texture = move(frameTextures[frameIdx]);
 				++frameIdx;
 			}
 			//calculate transform matrix
@@ -149,7 +149,7 @@ void Museum::readModularData(const char* filename)
 	char c;
 	for (int i = 0; i < NumModulars; i++) {
 		infile >> modName;
-		if (modName == "frame")
+		if (modName == "nFrame")
 			frameDataIdx = i;
 		cout << modName << endl;
 
@@ -170,6 +170,7 @@ void Museum::readModularData(const char* filename)
 			c = infile.peek();
 		}
 	}
+	int a = 0;
 }
 
 
