@@ -12,6 +12,8 @@ uniform mat4 Projection;
 //uniform vec4 LightPosition; 
 uniform vec4 LightP[MAX_LIGHTS];
 uniform int NumLights; //Number of light sources we will be making use of
+uniform bool GemUse;
+uniform float GemAtt;
 
 out vec3 N;
 //out vec3 L;
@@ -31,7 +33,12 @@ void main()
 		//L = LightPosition.xyz-pos; 
 		LV[i] = LightP[i].xyz-pos;
 
-		ATT[i] = 1.0/(1+0.005*pow(length(LV[i]), 2.0)); //Get Attenuation factor
+		if(GemUse){
+			ATT[i] = 1.0/(1+GemAtt*pow(length(LV[i]), 2.0)); //Get Attenuation factor
+		}
+		else{
+			ATT[i] = 1.0/(1+0.005*pow(length(LV[i]), 2.0)); //Get Attenuation factor
+		}
 
 		// if lightposition is sent in as a vector the
 		// the following is needed. ie Infinite light source

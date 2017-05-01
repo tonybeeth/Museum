@@ -1,0 +1,14 @@
+# Blender MTL File: 'new_plan2.blend'
+# Material Count: 1
+
+newmtl _msj00t0_kao
+Ns 7.843137
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\true-several-thousand-hands\source\f304352e46d6488ba8b7fca257b17f3e\ntxr000.png
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\true-several-thousand-hands\\source\\f304352e46d6488ba8b7fca257b17f3e\\ntxr000.png

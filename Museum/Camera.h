@@ -21,7 +21,7 @@ public:
 	static enum MOVE_DIR {FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN};
 
 	Camera(vec3 = vec3(0, 0, 0), vec3 = vec3(0, 0, -10));
-	~Camera();
+
 	void mouseRotate(GLfloat x, GLfloat y);
 	void move(MOVE_DIR);
 	vec3 position();
@@ -34,6 +34,7 @@ public:
 	void SetSpeed(float s);
 	vec3 Up();
 
+	~Camera();
 };
 
 #endif // !CAMERA_H

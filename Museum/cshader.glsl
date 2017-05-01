@@ -24,6 +24,11 @@ layout( local_size_x =128, local_size_y = 1, local_size_z = 1) in;
 
 const vec4 SPHERE = vec4(0., 0., 0., 1); //x,y,z,r of our sphere
 											//could also have this passed in
+
+struct Cube{
+	vec4 a, b, c, d, e, f, g, h;
+};
+
 vec3 Bounce(vec3 vin, vec3 n)
 {
 	vec3 vout = reflect(vin, n);
@@ -47,7 +52,7 @@ bool IsInsideSphere(vec3 p, vec4 s)
 void main()
 {
 	const vec3 G = vec3(0., -9.8, 0.);
-	const float DT = 0.005;
+	const float DT = 0.003;
 
 	uint gid = gl_GlobalInvocationID.x;		//the y and z values are both 1 in this case
 

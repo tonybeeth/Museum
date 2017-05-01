@@ -1,0 +1,152 @@
+# Blender MTL File: 'new_plan2.blend'
+# Material Count: 11
+
+newmtl MAW_MAT
+Ns 64.705882
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.500000 0.500000 0.500000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\MAW [AlbedoM].jpg
+map_Bump file3_Normal_Bump.jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\MAW [AlbedoM].jpg
+map_Ke Luc\\Downloads\\Maw_J_Laygo.fbm\\MAW_glow.png
+map_Ks Luc\\Downloads\\Maw_J_Laygo.fbm\\maria_specular.png
+
+newmtl Material__100
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo23 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo23 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo23 [AlbedoM].jpg
+map_Ks C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo23 [Roughness].jpg
+refl C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo23 [Metalness].jpg
+
+newmtl Material__64
+Ns 23.529412
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.315000 0.315000 0.315000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material__91
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo3 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo3 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo3 [AlbedoM].jpg
+
+newmtl Material__92
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo2 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo2 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo2 [AlbedoM].jpg
+
+newmtl Material__94
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo047 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo047 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo047 [AlbedoM].jpg
+
+newmtl Material__95
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo15 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo15 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo15 [AlbedoM].jpg
+map_Ks C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo15 [Roughness].jpg
+
+newmtl Material__96
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo048 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo048 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo048 [AlbedoM].jpg
+map_Ks C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo048 [Roughness].jpg
+
+newmtl Material__97
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo38 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo38 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo38 [AlbedoM].jpg
+map_Ks C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo38 [Roughness].jpg
+
+newmtl Material__98
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd [AlbedoM].jpg
+map_Bump [Normal].jpg
+map_Ka [AlbedoM].jpg
+map_Ks [Roughness].jpg
+refl [Metalness].jpg
+
+newmtl Material__99
+Ns 9.803922
+Ka 0.588000 0.588000 0.588000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:\Users\YouKnowWho\Downloads\susanoo\source\Susanoo.rar\Textures\Susanoo17 [AlbedoM].jpg
+map_Bump C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo17 [Normal].jpg
+map_Ka C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo17 [AlbedoM].jpg
+map_Ks C:\\Users\\YouKnowWho\\Downloads\\susanoo\\source\\Susanoo.rar\\Textures\\Susanoo17 [Roughness].jpg

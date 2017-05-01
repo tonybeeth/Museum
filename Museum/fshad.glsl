@@ -39,7 +39,7 @@ void main()
 	float Ks = pow( max(dot(NN, H), 0.0), Shininess );
 	ambient = LAmbient * MAmbient; //LAmbient*MAmbient;
 	diffuse = Kd*LDiffuse*MDiffuse;
-		
+
 	if( dot(LL, NN) < 0.0 ) {
     	specular = vec3(0.0, 0.0, 0.0);
 	} else	specular = Ks * LSpecular*MSpecular;

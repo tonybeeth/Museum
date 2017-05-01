@@ -25,13 +25,14 @@ layout( std140, binding=6) buffer Col
 
 void main()
 {
-	vec3 pos = (ModelView * vPosition).xyz;
-	E=pos;
 	vec4 p = vPosition;
 	if(particle){
-		pcolor = Colors[int(p.w)];
 		p.w = 1;
+		pcolor = vec4(0.0,0.0,0.0,0.0);
 	}
+
+	vec3 pos = (ModelView * p).xyz;
+	E=pos;
 	gl_Position=Projection*ModelView*p;
     N = (ModelView*vNormal).xyz; //transform the normal as well
 

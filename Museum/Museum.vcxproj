@@ -167,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cshader.glsl" />
+    <None Include="fountshader.glsl" />
     <None Include="fshad.glsl" />
     <None Include="fshader.glsl" />
     <None Include="pfshader.glsl" />

@@ -63,18 +63,9 @@ void Camera::Step()
 	vdir += vup*pitch;
 	vdir = normalize(vdir);
 
-	//vec3 negYAxis(0.0, -1.0, 0.0), posYAxis(0.0, 1.0, 0.0);
-	//GLfloat maxAng = cos(M_PI/6.0);
-	//float ang1 = dot(vdir, posYAxis), ang2 = dot(vdir, negYAxis);
-
-	////if (dot(vdir, posYAxis) > maxAng || dot(vdir, negYAxis) > maxAng){
-	//	//int a = 31;
-	////}
-	////else {
-		up_v = vup;
-		side_v = vside;
-		direction = vdir;
-	//}
+	up_v = vup;
+	side_v = vside;
+	direction = vdir;
 
 	view_pos = pos + direction;
 	
@@ -139,5 +130,6 @@ void Camera::updateMouse(GLfloat x, GLfloat y)
 vec3 Camera::Up()
 {
 	return vec3(0.0, 1.0, 0.0);
-	//return -normalize(cross(side_v, direction));
+
+	//return -normalize(cross(side_v, direction)); Use for flying cameras
 }

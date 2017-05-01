@@ -94,5 +94,8 @@
     <None Include="cshader.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="fountshader.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
