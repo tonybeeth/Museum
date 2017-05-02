@@ -52,6 +52,8 @@ Object sphere;
 #define WORK_GROUP_SIZE 128		//number of work items per work group
 GLuint particlesVao;
 GLuint posSSbo, velSSbo, colSSbo;
+GLuint UseDirLightLoc;
+bool UseDirLight = false;
 GLSLProgram csProgram; //compute shader program
 
 void SetupParticles()
@@ -220,6 +222,8 @@ init()
 	GLuint LSpecularLoc = glGetUniformLocation(program, "LSpecular");
 	glUniform3fv(LSpecularLoc, 1, light_specular);
 
+	UseDirLightLoc = glGetUniformLocation(program, "UseDirectional");
+
 	// store the locations for the modelview and projection matrices.  This won't change
 	ModelViewLoc = glGetUniformLocation(program, "ModelView");
 	ProjectionLoc = glGetUniformLocation(program, "Projection");
@@ -318,12 +322,12 @@ display(void)
 
 	camera.Step();
 	model_view = LookAt(camera.position(), camera.viewPosition(), camera.Up());
-	glUseProgram(program);
-	glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
+	//glUseProgram(program);
+	//glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
 	skybox.Draw();
 
-	glUseProgram(program);
-	museum.Draw(GL_TRIANGLES, ModelViewLoc, &fcull);
+	//glUseProgram(program);
+	museum.Draw(GL_TRIANGLES, ModelViewLoc, &frustumCull);
 	//sphere.Draw(GL_TRIANGLES);
 
 	//displayParticles();
@@ -380,6 +384,10 @@ keyboard(unsigned char key, int x, int y)
 		break;
 	case 'P':
 		camera.move(Camera::DOWN);
+		break;
+	case '0':
+		UseDirLight = !UseDirLight;
+		glUniform1i(UseDirLightLoc, UseDirLight);
 		break;
 	}
 	museum.keyboardFunction(key, x, y);
@@ -467,16 +475,17 @@ int
 main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutSetOption(GLUT_MULTISAMPLE, 8);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(512, 512);
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutCreateWindow("Obj loader");
+	glutCreateWindow("Virtual Museum");
+	glEnable(GLUT_MULTISAMPLE);
 
 	glewInit();
 	init();
 
-	glEnable(GL_MULTISAMPLE);
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 

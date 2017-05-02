@@ -32,9 +32,10 @@ void Museum::LoadFrameTextures(vector<string>& frameImages)
 *************************************************************/
 void Museum::Load(GLuint program)
 {
+	this->program = program;
 	glUseProgram(program);
 
-	//vector of names for models
+	//vector of filenames for models
 	/*Modularized data are the first set of models. (This is important to the implementation of the museum).
 	  The order of the file names must be the same as the order of the enums in the header file.
 	*/
@@ -89,7 +90,6 @@ void Museum::Load(GLuint program)
 	}
 
 	//load Museum models
-	this->program = program;
 	for (Object& model : models) {
 		model.Load(program);
 	}
