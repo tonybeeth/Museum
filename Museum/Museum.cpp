@@ -40,21 +40,22 @@ void Museum::Load(GLuint program)
 	  The order of the file names must be the same as the order of the enums in the header file.
 	*/
 	vector<string> objNames = { "wall.obj", "door.obj", "lamp_holder.obj", "woodBench.obj", "Frame-1.obj", 
-		"base.obj", "30-ts-serpent.obj", "Xiuhcoatl.obj", "SasukeSusanoo.obj", "YinYangSusanoo.obj", "Mask_Statue.obj",
-		"stairs.obj", "cstairs.obj", "amenemhat.obj", "cube.obj" };
+		"base.obj", "30-ts-serpent.obj", "Xiuhcoatl.obj", "SasukeSusanoo.obj", "YinYangSusanoo.obj", 
+		"Mask_Statue.obj", "stairs.obj", "cstairs.obj", "amenemhat.obj", "cube.obj" };
 
 	//object file names for lamps
-	vector<string> LightSourceNames = { "sphere_bulb1.obj", "sphere_bulb2.obj", "sphere_bulb3.obj", "sphere_bulb4.obj",
-		"cone_bulb1.obj", "cone_bulb2.obj", "cone_bulb3.obj", "cone_bulb4.obj"
+	vector<string> LightSourceNames = { "sphere_bulb1.obj", "sphere_bulb2.obj", "sphere_bulb3.obj",
+		"sphere_bulb4.obj","cone_bulb1.obj", "cone_bulb2.obj", "cone_bulb3.obj", "cone_bulb4.obj"
 	};
 
 	//image names for images on frames
-	vector<string> frameImages = { "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg",
-		"7.jpg", "8.jpg", "9.jpg", "10.jpg" };
+	vector<string> frameImages = { "mendelev.jpg", "lastSupper.jpg", "mozart.jpg", 
+		"norton.jpg", "davinci.jpg", "ouroboros.jpg", "pinterest.jpg", "benleader.jpg", 
+		"2monks.jpg", "yamamoto.png", "sasuke.jpg", "archer.jpg", "hand.jpg", "hitler.jpg" };
 
 	//Gems around yin yang susanoo
 	vector<string> gemNames = { "Gem.obj", "Gem2.obj", "Gem3.obj", "Gem4.obj" };
-
+	
 	//add models of gems
 	for (string& str : gemNames) {
 		Gems.push_back(str.c_str());
@@ -86,17 +87,17 @@ void Museum::Load(GLuint program)
 
 	//Load Gems
 	for (Object& gem : Gems) {
-		gem.Load(program);
+		gem.LoadGPU(program);
 	}
 
 	//load Museum models
 	for (Object& model : models) {
-		model.Load(program);
+		model.LoadGPU(program);
 	}
 
 	//Load lamps
 	for (Object& lamp : Lamps) {
-		lamp.Load(program);
+		lamp.LoadGPU(program);
 	}
 
 }
@@ -188,15 +189,17 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 	for (int i = 0; i < NumModulars; i++) {		
 		for (auto modData : modularData[i]) {
 
-			if (i == FRAME && frameIdx < 10) {
+			if (i == FRAME) {
 				//set texturing data for frames
 				models[i].meshes[1].textureAvailable = true;
 				models[i].meshes[1].texture = move(frameTextures[frameIdx]);
 				++frameIdx;
 			}
+
 			//calculate transform matrix for modular data
-			TRANSFORM = Translate(modData.first)*RotateX(modData.second.x)*RotateY(modData.second.y)*
-				RotateZ(modData.second.z);
+			TRANSFORM = Translate(get<0>(modData))*RotateX(get<1>(modData).x)*RotateY(get<1>(modData).y)*
+				RotateZ(get<1>(modData).z)*Scale(get<2>(modData));
+
 			//multiply transform with modelview and projection matrices
 			PMVT = PMV * TRANSFORM;
 			//send modelview*transform matrix to shader
@@ -260,7 +263,8 @@ void Museum::readModularData(const char* filename)
 
 	cout << "\nLoading modular data from file: " << filename << endl;
 	string modName, meshName;
-	pair<vec3, vec3> modData;
+	tuple<vec3, vec3, vec3> modData;
+	vec3 loc, rot, scale;
 
 	char c;
 	for (int i = 0; i < NumModulars; i++) {
@@ -275,11 +279,13 @@ void Museum::readModularData(const char* filename)
 				break;
 			}
 			//first is translation data
-			infile >> modData.first.x >> modData.first.y >> modData.first.z;
+			infile >> loc.x >> loc.y >> loc.z;
 			//second is rotation data
-			infile >> modData.second.x >> modData.second.y >> modData.second.z;
+			infile >> rot.x >> rot.y >> rot.z;
+			//third is scale data
+			infile >> scale.x >> scale.y >> scale.z;
 
-			modularData[i].push_back(modData);
+			modularData[i].push_back(make_tuple(loc, rot, scale));
 			infile.ignore();
 			c = infile.peek();
 		}

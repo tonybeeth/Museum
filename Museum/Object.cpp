@@ -9,7 +9,7 @@ Object::Object()
 
 Object::Object(const char* filename)
 {
-	LoadFile(filename); 
+	LoadFromFile(filename); 
 }
 
 float Object::MaxWidth()
@@ -23,8 +23,10 @@ vec4 Object::BoxCenter()
 }
 
 //Load object from specific file
-bool Object::LoadFile(const char* filename)
+bool Object::LoadFromFile(const char* filename)
 {
+	this->filename = filename;
+
 	//Use Assimp's importer to load object
 	Assimp::Importer importer;
 	const aiScene* scene = NULL;
@@ -57,8 +59,8 @@ bool Object::LoadFile(const char* filename)
 		meshes.push_back(Mesh(scene, meshIdx));
 
 		//get mesh's min and max box points
-		maxPt = meshes.back().maxBoxpt();
-		minPt = meshes.back().minBoxpt();
+		maxPt = meshes.back().MaxBoxPt();
+		minPt = meshes.back().MinBoxPt();
 
 		//get 8 points for bounding box
 		maxBox.x = max(maxPt.x, maxBox.x);
@@ -75,7 +77,7 @@ bool Object::LoadFile(const char* filename)
 	BoxMax = max(max(maxBox.x - minBox.x,
 		maxBox.y - minBox.y), maxBox.z - minBox.z);
 
-	//8 Axis Align bounding box points
+	//Store 8 Axis Align bounding box points
 	boundBox.push_back(vec3(minBox.x, maxBox.y, minBox.z)); //back left top
 	boundBox.push_back(vec3(minBox.x, minBox.y, minBox.z)); //back left down
 	boundBox.push_back(vec3(maxBox.x, minBox.y, minBox.z)); //back right down
@@ -85,10 +87,12 @@ bool Object::LoadFile(const char* filename)
 	boundBox.push_back(vec3(maxBox.x, minBox.y, maxBox.z)); //front right down
 	boundBox.push_back(vec3(maxBox.x, maxBox.y, maxBox.z)); //front right top
 
+	//Get center of bounding box
 	centerBox = vec4((maxBox.x + minBox.x) / 2,
 		(minBox.y + maxBox.y) / 2,
 		(maxBox.z + minBox.z) / 2, 1.0);
 
+	//Free Scene data
 	importer.FreeScene();
 }
 
@@ -97,15 +101,16 @@ Object::~Object(void)
 	meshes.clear();
 }
 
-bool Object::Load(GLuint& prog)
+bool Object::LoadGPU(GLuint& prog)
 {
 	program = prog;
 	bool loaded = true;
 
+	cout << "\nLOADING OBJECT: " << filename << endl;
 	//load all meshes
 	for (Mesh& mesh : meshes)
 	{
-		loaded = loaded && mesh.Load(program);
+		loaded = loaded && mesh.LoadGPU(program);
 	}
 	return loaded;
 }
@@ -121,12 +126,12 @@ bool Object::Draw(GLenum mode)
 	return drawn;
 }
 
-vec3 Object::minBoxpt()
+vec3 Object::MinBoxPt()
 {
 	return boundBox[1];
 }
 
-vec3 Object::maxBoxpt()
+vec3 Object::MaxBoxPt()
 {
 	return boundBox[7];
 }

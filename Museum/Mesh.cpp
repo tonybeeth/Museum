@@ -5,36 +5,43 @@ Mesh::Mesh(const aiScene* scene, unsigned int meshIndex)
 {
 	const aiMesh* mesh = scene->mMeshes[meshIndex];
 	name = mesh->mName.data;
-	
+
 	vec3 minBox(FLT_MAX), maxBox(-FLT_MAX);
 
 	//EXTRACT vertices, normals, and uvs
 	aiVector3D v;
-	for (GLuint t = 0; t < mesh->mNumFaces; t++) {
-		const aiFace* face = &mesh->mFaces[t];
-		for (int i = 0; i < face->mNumIndices; i++) {
-			v = mesh->mVertices[face->mIndices[i]];
-			vertexList.push_back(vec4(v.x, v.y, v.z, 1));
-			
-			//bounding box and box max
-			maxBox.x = max(maxBox.x, v.x);
-			minBox.x = min(minBox.x, v.x);
-			minBox.y = min(minBox.y, v.y);
-			maxBox.y = max(maxBox.y, v.y);
-			maxBox.z = max(maxBox.z, v.z);
-			minBox.z = min(minBox.z, v.z);
+	for (int t = 0; t < mesh->mNumVertices; ++t) {
+		//Get vertices
+		v = mesh->mVertices[t];
+		vertexList.push_back(vec4(v.x, v.y, v.z, 1));
+		//bounding box and box max
+		maxBox.x = max(maxBox.x, v.x);
+		minBox.x = min(minBox.x, v.x);
+		minBox.y = min(minBox.y, v.y);
+		maxBox.y = max(maxBox.y, v.y);
+		maxBox.z = max(maxBox.z, v.z);
+		minBox.z = min(minBox.z, v.z);
 
-			v = mesh->mNormals[face->mIndices[i]];
-			normalList.push_back(vec4(v.x, v.y, v.z, 0));
+		//Get Normals
+		v = mesh->mNormals[t];
+		normalList.push_back(vec4(v.x, v.y, v.z, 0));
 
-			//NEED TO REVISE THIS LATER: CURRENTLY WORKING WITH FIRST OF 8 SLOTS
-			if (mesh->mTextureCoords[0]) { 
-				v = mesh->mTextureCoords[0][face->mIndices[i]];
-				uvList.push_back(vec2(v.x, v.y));
-			}
+		//Get UVs
+		//NEED TO REVISE THIS LATER: CURRENTLY WORKING WITH FIRST OF 8 SLOTS
+		if (mesh->mTextureCoords[0]) {
+			v = mesh->mTextureCoords[0][t];
+			uvList.push_back(vec2(v.x, v.y));
 		}
 	}
-	
+
+	//Get indices
+	for (int t = 0; t < mesh->mNumFaces; t++) {
+		const aiFace* face = &mesh->mFaces[t];
+		for (int i = 0; i < face->mNumIndices; i++) {
+			indexList.push_back(face->mIndices[i]);
+		}
+	}
+
 	BoxMax = max(max(maxBox.x - minBox.x,
 		maxBox.y - minBox.y), maxBox.z - minBox.z);
 
@@ -49,7 +56,7 @@ Mesh::Mesh(const aiScene* scene, unsigned int meshIndex)
 	boundBox.push_back(vec3(maxBox.x, maxBox.y, maxBox.z)); //front right top
 
 	centerBox = vec4((maxBox.x + minBox.x) / 2,
-		(minBox.y + maxBox.y) / 2, 
+		(minBox.y + maxBox.y) / 2,
 		(maxBox.z + minBox.z) / 2, 1.0);
 
 	//EXTRACT materials
@@ -77,20 +84,20 @@ Mesh::Mesh(const aiScene* scene, unsigned int meshIndex)
 	int texIndex = 0; //only get first texture associated with material
 	aiReturn texFound;
 	aiString path;	// filename
-	//Get texture associated with this mesh's meterial
+					//Get texture associated with this mesh's meterial
 	texFound = meshMaterial->GetTexture(aiTextureType_DIFFUSE,
 		texIndex, &path);
-	
+
 	//if texture was found, set tex file name
 	if (texFound == AI_SUCCESS) {
 		textureAvailable = true;
 		textureFileName = path.data;
-		textureFileName = textureFileName.substr(textureFileName.find_last_of('\\')+1);
+		textureFileName = textureFileName.substr(textureFileName.find_last_of('\\') + 1);
 		textureFileName = ".\\textures\\" + textureFileName;
 	}
 }
 
-bool Mesh::Load(GLuint program)
+bool Mesh::LoadGPU(GLuint program)
 {
 	this->program = program;
 	//Generate and bind mesh's vao
@@ -98,26 +105,35 @@ bool Mesh::Load(GLuint program)
 	glBindVertexArray(vao);
 
 	GLuint position_loc, normal_loc, uv_loc;
-		
+
 	int numVertices = vertexList.size();
 	int numNormals = normalList.size();
 	int numUVs = uvList.size();
+	int numIndices = indexList.size();
 
 	//size of vertices, normals, uvs
-	int sizeVertices = numVertices * 4 * sizeof(GLfloat);
-	int sizeNormals = numNormals * 4 * sizeof(GLfloat);
-	int sizeUVs = numUVs * 2 * sizeof(GLfloat);
-	
+	int sizeVertices = numVertices * sizeof(vec4);
+	int sizeNormals = numNormals * sizeof(vec4);
+	int sizeUVs = numUVs * sizeof(vec2);
+	int sizeIndices = numIndices * sizeof(GLuint);
+
 	cout << "\nMesh name: " << name << endl;
 	cout << "Vertices: " << numVertices << endl;
 	cout << "Normals: " << numNormals << endl;
 	cout << "UVs: " << numUVs << endl;
+	cout << "Indices: " << numIndices << endl;
 
-	//Generate buffer
+	//Generate Array buffer
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	//Allocate buffer size enough to hold vertices, normals, and UVs
 	glBufferData(GL_ARRAY_BUFFER, sizeVertices + sizeNormals + sizeUVs, NULL, GL_STATIC_DRAW);
+
+	//Generate Index Buffer
+	glGenBuffers(1, &indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	//Load indices
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeIndices, &indexList[0], GL_STATIC_DRAW);
 
 	//load vertices
 	if (numVertices > 0) {
@@ -175,7 +191,7 @@ bool Mesh::Draw(GLenum mode)
 {
 	//bind vao and vbo
 	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 	//move material properties to shader
 	GLuint ambient_loc, diffuse_loc,
@@ -200,33 +216,24 @@ bool Mesh::Draw(GLenum mode)
 		texture.Use(program, "tex");
 	}
 
-	glDrawArrays(mode, 0, vertexList.size());
+	glDrawElements(mode, indexList.size(), GL_UNSIGNED_INT, (void*)0);
+	//glDrawArrays(mode, 0, vertexList.size());
 
-	//unbind vbo and vao
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//unbind index buffer and vao
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	return true;
 }
 
-vec3 Mesh::minBoxpt()
+vec3 Mesh::MinBoxPt()
 {
 	return boundBox[1];
 }
 
-vec3 Mesh::maxBoxpt()
+vec3 Mesh::MaxBoxPt()
 {
 	return boundBox[7];
-}
-
-string Mesh::textureName()
-{
-	return textureFileName;
-}
-
-bool Mesh::hasTexture()
-{
-	return textureAvailable;
 }
 
 Mesh::~Mesh()

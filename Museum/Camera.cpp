@@ -8,7 +8,7 @@ Camera::Camera(vec3 pos, vec3 at)
 	side_v = cross(direction, up_v);
 	side_v = normalize(side_v);
 	yaw = pitch = 0.0;
-	speed = 0.5;
+	speed = 0.3;
 
 	this->pos = pos;
 	this->view_pos = at;
@@ -72,21 +72,21 @@ void Camera::Step()
 	yaw = pitch = 0; //reset yaw and pitch values
 }
 
-void Camera::mouseRotate(GLfloat x, GLfloat y)
-{
-	rotate(vec3((y - mousePos.y)*delta, (x - mousePos.x)*delta, 0));
-
-	updateMouse(x, y);
-}
+//void Camera::mouseRotate(GLfloat x, GLfloat y)
+//{
+//	rotate(vec3((y - mousePos.y)*delta, (x - mousePos.x)*delta, 0));
+//
+//	updateMouse(x, y);
+//}
 
 void Camera::move(MOVE_DIR dir)
 {
 	//This section of code is needed so the camera doesn't move along the y axis. i.e up and down
 	//So the camera has a fixed height throughout
-	vec3 vdir = direction;
-	vdir.y = 0.0; //zero y portion of direction vector
-	vdir = normalize(vdir);
-	vec3 vside = normalize(cross(vec3(0.0, 1.0, 0.0), vdir));
+	//vec3 vdir = direction;
+	//vdir.y = 0.0; //zero y portion of direction vector
+	//vdir = normalize(vdir);
+	//vec3 vside = normalize(cross(vec3(0.0, 1.0, 0.0), vdir));
 
 	switch (dir)
 	{
@@ -121,15 +121,22 @@ vec3 Camera::viewPosition()
 	return view_pos;
 }
 
-void Camera::updateMouse(GLfloat x, GLfloat y)
-{
-	mousePos.x = x;
-	mousePos.y = y;
-}
+//void Camera::updateMouse(GLfloat x, GLfloat y)
+//{
+//	mousePos.x = x;
+//	mousePos.y = y;
+//}
 
 vec3 Camera::Up()
 {
 	return vec3(0.0, 1.0, 0.0);
 
 	//return -normalize(cross(side_v, direction)); Use for flying cameras
+}
+
+void Camera::Balance()
+{
+	pos.y = view_pos.y;
+	direction = normalize(view_pos - pos);
+	side_v = normalize(cross(vec3(0, 1.0, 0), direction));
 }

@@ -1,0 +1,629 @@
+Import of scene succeeded: .\models\Gem.obj
+Meshes: 1
+Import of scene succeeded: .\models\Gem2.obj
+Meshes: 1
+Import of scene succeeded: .\models\Gem3.obj
+Meshes: 1
+Import of scene succeeded: .\models\Gem4.obj
+Meshes: 1
+Import of scene succeeded: .\models\wall.obj
+Meshes: 1
+Import of scene succeeded: .\models\door.obj
+Meshes: 1
+Import of scene succeeded: .\models\lamp_holder.obj
+Meshes: 1
+Import of scene succeeded: .\models\woodBench.obj
+Meshes: 1
+Import of scene succeeded: .\models\Frame-1.obj
+Meshes: 2
+Import of scene succeeded: .\models\base.obj
+Meshes: 4
+Import of scene succeeded: .\models\30-ts-serpent.obj
+Meshes: 5
+Import of scene succeeded: .\models\Xiuhcoatl.obj
+Meshes: 3
+Import of scene succeeded: .\models\SasukeSusanoo.obj
+Meshes: 2
+Import of scene succeeded: .\models\YinYangSusanoo.obj
+Meshes: 11
+Import of scene succeeded: .\models\Mask_Statue.obj
+Meshes: 7
+Import of scene succeeded: .\models\stairs.obj
+Meshes: 1
+Import of scene succeeded: .\models\cstairs.obj
+Meshes: 2
+Import of scene succeeded: .\models\amenemhat.obj
+Meshes: 5
+Import of scene succeeded: .\models\cube.obj
+Meshes: 1
+Import of scene succeeded: .\models\sphere_bulb1.obj
+Meshes: 1
+Import of scene succeeded: .\models\sphere_bulb2.obj
+Meshes: 1
+Import of scene succeeded: .\models\sphere_bulb3.obj
+Meshes: 1
+Import of scene succeeded: .\models\sphere_bulb4.obj
+Meshes: 1
+Import of scene succeeded: .\models\cone_bulb1.obj
+Meshes: 1
+Import of scene succeeded: .\models\cone_bulb2.obj
+Meshes: 1
+Import of scene succeeded: .\models\cone_bulb3.obj
+Meshes: 1
+Import of scene succeeded: .\models\cone_bulb4.obj
+Meshes: 1
+Loading Museum Frame Textures...
+Initializing texture: .\textures\frameImages\mendelev.jpg
+.\textures\frameImages\mendelev.jpg loading successful
+Initializing texture: .\textures\frameImages\lastSupper.jpg
+.\textures\frameImages\lastSupper.jpg loading successful
+Initializing texture: .\textures\frameImages\mozart.jpg
+.\textures\frameImages\mozart.jpg loading successful
+Initializing texture: .\textures\frameImages\norton.jpg
+.\textures\frameImages\norton.jpg loading successful
+Initializing texture: .\textures\frameImages\davinci.jpg
+.\textures\frameImages\davinci.jpg loading successful
+Initializing texture: .\textures\frameImages\ouroboros.jpg
+.\textures\frameImages\ouroboros.jpg loading successful
+Initializing texture: .\textures\frameImages\pinterest.jpg
+.\textures\frameImages\pinterest.jpg loading successful
+Initializing texture: .\textures\frameImages\benleader.jpg
+.\textures\frameImages\benleader.jpg loading successful
+Initializing texture: .\textures\frameImages\2monks.jpg
+.\textures\frameImages\2monks.jpg loading successful
+Initializing texture: .\textures\frameImages\yamamoto.png
+.\textures\frameImages\yamamoto.png loading successful
+Initializing texture: .\textures\frameImages\sasuke.jpg
+.\textures\frameImages\sasuke.jpg loading successful
+Initializing texture: .\textures\frameImages\archer.jpg
+.\textures\frameImages\archer.jpg loading successful
+Initializing texture: .\textures\frameImages\hand.jpg
+.\textures\frameImages\hand.jpg loading successful
+Initializing texture: .\textures\frameImages\hitler.jpg
+.\textures\frameImages\hitler.jpg loading successful
+
+Loading modular data from file: modular.dat
+brick_wall
+brick_door
+lamp_holder
+Bench
+nFrame
+
+LOADING OBJECT: Gem.obj
+
+Mesh name: 
+Vertices: 192
+Normals: 192
+UVs: 0
+Indices: 270
+No texture
+
+LOADING OBJECT: Gem2.obj
+
+Mesh name: 
+Vertices: 192
+Normals: 192
+UVs: 0
+Indices: 270
+No texture
+
+LOADING OBJECT: Gem3.obj
+
+Mesh name: 
+Vertices: 192
+Normals: 192
+UVs: 0
+Indices: 270
+No texture
+
+LOADING OBJECT: Gem4.obj
+
+Mesh name: 
+Vertices: 192
+Normals: 192
+UVs: 0
+Indices: 270
+No texture
+
+LOADING OBJECT: wall.obj
+
+Mesh name: 
+Vertices: 24
+Normals: 24
+UVs: 24
+Indices: 36
+Texture: .\textures\brick1.jpg
+Initializing texture: .\textures\brick1.jpg
+.\textures\brick1.jpg loading successful
+
+LOADING OBJECT: door.obj
+
+Mesh name: 
+Vertices: 48
+Normals: 48
+UVs: 48
+Indices: 84
+Texture: .\textures\brick1.jpg
+Initializing texture: .\textures\brick1.jpg
+.\textures\brick1.jpg loading successful
+
+LOADING OBJECT: lamp_holder.obj
+
+Mesh name: 
+Vertices: 3290
+Normals: 3290
+UVs: 3290
+Indices: 4530
+No texture
+
+LOADING OBJECT: woodBench.obj
+
+Mesh name: 
+Vertices: 18799
+Normals: 18799
+UVs: 18799
+Indices: 35184
+Texture: .\textures\Bench_2K_Diffuse1.jpg
+Initializing texture: .\textures\Bench_2K_Diffuse1.jpg
+.\textures\Bench_2K_Diffuse1.jpg loading successful
+
+LOADING OBJECT: Frame-1.obj
+
+Mesh name: 
+Vertices: 666
+Normals: 666
+UVs: 0
+Indices: 4008
+No texture
+
+Mesh name: 
+Vertices: 4
+Normals: 4
+UVs: 4
+Indices: 6
+No texture
+
+LOADING OBJECT: base.obj
+
+Mesh name: 
+Vertices: 36
+Normals: 36
+UVs: 36
+Indices: 54
+Texture: .\textures\concrete.jpg
+Initializing texture: .\textures\concrete.jpg
+.\textures\concrete.jpg loading successful
+
+Mesh name: 
+Vertices: 28
+Normals: 28
+UVs: 28
+Indices: 60
+Texture: .\textures\wood_seamless.jpg
+Initializing texture: .\textures\wood_seamless.jpg
+.\textures\wood_seamless.jpg loading successful
+
+Mesh name: 
+Vertices: 4
+Normals: 4
+UVs: 4
+Indices: 6
+Texture: .\textures\seamless_wood.jpg
+Initializing texture: .\textures\seamless_wood.jpg
+.\textures\seamless_wood.jpg loading successful
+
+Mesh name: 
+Vertices: 24
+Normals: 24
+UVs: 24
+Indices: 36
+Texture: .\textures\brick1.jpg
+Initializing texture: .\textures\brick1.jpg
+.\textures\brick1.jpg loading successful
+
+LOADING OBJECT: 30-ts-serpent.obj
+
+Mesh name: 
+Vertices: 36
+Normals: 36
+UVs: 36
+Indices: 66
+No texture
+
+Mesh name: 
+Vertices: 24
+Normals: 24
+UVs: 24
+Indices: 54
+Texture: .\textures\Serpent_grill.png
+Initializing texture: .\textures\Serpent_grill.png
+.\textures\Serpent_grill.png loading successful
+
+Mesh name: 
+Vertices: 1112
+Normals: 1112
+UVs: 1112
+Indices: 2811
+Texture: .\textures\Serpent_metal.png
+Initializing texture: .\textures\Serpent_metal.png
+.\textures\Serpent_metal.png loading successful
+
+Mesh name: 
+Vertices: 4
+Normals: 4
+UVs: 4
+Indices: 4
+Texture: .\textures\Serpent_hull.png
+Initializing texture: .\textures\Serpent_hull.png
+.\textures\Serpent_hull.png loading successful
+
+Mesh name: 
+Vertices: 3393
+Normals: 3393
+UVs: 3393
+Indices: 5955
+Texture: .\textures\Serpent_hull.png
+Initializing texture: .\textures\Serpent_hull.png
+.\textures\Serpent_hull.png loading successful
+
+LOADING OBJECT: Xiuhcoatl.obj
+
+Mesh name: 
+Vertices: 31079
+Normals: 31079
+UVs: 31079
+Indices: 149451
+Texture: .\textures\tex_x.jpg
+Initializing texture: .\textures\tex_x.jpg
+.\textures\tex_x.jpg loading successful
+
+Mesh name: 
+Vertices: 1257
+Normals: 1257
+UVs: 1257
+Indices: 1676
+Texture: .\textures\tex_x.jpg
+Initializing texture: .\textures\tex_x.jpg
+.\textures\tex_x.jpg loading successful
+
+Mesh name: 
+Vertices: 5361
+Normals: 5361
+UVs: 5361
+Indices: 5625
+Texture: .\textures\tex_x.jpg
+Initializing texture: .\textures\tex_x.jpg
+.\textures\tex_x.jpg loading successful
+
+LOADING OBJECT: SasukeSusanoo.obj
+
+Mesh name: 
+Vertices: 2
+Normals: 2
+UVs: 2
+Indices: 2
+Texture: .\textures\ntxr002.png
+Initializing texture: .\textures\ntxr002.png
+.\textures\ntxr002.png loading successful
+
+Mesh name: 
+Vertices: 11873
+Normals: 11873
+UVs: 11873
+Indices: 40842
+Texture: .\textures\ntxr002.png
+Initializing texture: .\textures\ntxr002.png
+.\textures\ntxr002.png loading successful
+
+LOADING OBJECT: YinYangSusanoo.obj
+
+Mesh name: 
+Vertices: 8352
+Normals: 8352
+UVs: 8352
+Indices: 30873
+Texture: .\textures\Susanoo048 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo048 [AlbedoM].jpg
+.\textures\Susanoo048 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 198998
+Normals: 198998
+UVs: 198998
+Indices: 598809
+Texture: .\textures\[AlbedoM].jpg
+Initializing texture: .\textures\[AlbedoM].jpg
+ERROR: could not load .\textures\[AlbedoM].jpg
+
+Mesh name: 
+Vertices: 5410
+Normals: 5410
+UVs: 5410
+Indices: 6258
+No texture
+
+Mesh name: 
+Vertices: 54760
+Normals: 54760
+UVs: 54760
+Indices: 101256
+Texture: .\textures\Susanoo047 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo047 [AlbedoM].jpg
+.\textures\Susanoo047 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 64922
+Normals: 64922
+UVs: 64922
+Indices: 176358
+Texture: .\textures\Susanoo38 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo38 [AlbedoM].jpg
+.\textures\Susanoo38 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 7382
+Normals: 7382
+UVs: 7382
+Indices: 20058
+Texture: .\textures\Susanoo17 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo17 [AlbedoM].jpg
+.\textures\Susanoo17 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 4765
+Normals: 4765
+UVs: 4765
+Indices: 17307
+Texture: .\textures\MAW [AlbedoM].jpg
+Initializing texture: .\textures\MAW [AlbedoM].jpg
+.\textures\MAW [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 3111
+Normals: 3111
+UVs: 3111
+Indices: 8544
+Texture: .\textures\Susanoo2 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo2 [AlbedoM].jpg
+.\textures\Susanoo2 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 72658
+Normals: 72658
+UVs: 72658
+Indices: 180855
+Texture: .\textures\Susanoo15 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo15 [AlbedoM].jpg
+.\textures\Susanoo15 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 1385
+Normals: 1385
+UVs: 1385
+Indices: 5493
+Texture: .\textures\Susanoo3 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo3 [AlbedoM].jpg
+.\textures\Susanoo3 [AlbedoM].jpg loading successful
+
+Mesh name: 
+Vertices: 4881
+Normals: 4881
+UVs: 4881
+Indices: 7848
+Texture: .\textures\Susanoo23 [AlbedoM].jpg
+Initializing texture: .\textures\Susanoo23 [AlbedoM].jpg
+.\textures\Susanoo23 [AlbedoM].jpg loading successful
+
+LOADING OBJECT: Mask_Statue.obj
+
+Mesh name: 
+Vertices: 406
+Normals: 406
+UVs: 0
+Indices: 1032
+No texture
+
+Mesh name: 
+Vertices: 16069
+Normals: 16069
+UVs: 0
+Indices: 96288
+No texture
+
+Mesh name: 
+Vertices: 1662
+Normals: 1662
+UVs: 1662
+Indices: 7680
+Texture: .\textures\2000px-Sharingan_triple.svg.png
+Initializing texture: .\textures\2000px-Sharingan_triple.svg.png
+.\textures\2000px-Sharingan_triple.svg.png loading successful
+
+Mesh name: 
+Vertices: 4435
+Normals: 4435
+UVs: 0
+Indices: 26199
+No texture
+
+Mesh name: 
+Vertices: 507
+Normals: 507
+UVs: 507
+Indices: 2496
+Texture: .\textures\2000px-Sharingan_triple.svg.png
+Initializing texture: .\textures\2000px-Sharingan_triple.svg.png
+.\textures\2000px-Sharingan_triple.svg.png loading successful
+
+Mesh name: 
+Vertices: 15752
+Normals: 15752
+UVs: 0
+Indices: 91008
+No texture
+
+Mesh name: 
+Vertices: 141025
+Normals: 141025
+UVs: 0
+Indices: 245760
+No texture
+
+LOADING OBJECT: stairs.obj
+
+Mesh name: 
+Vertices: 66
+Normals: 66
+UVs: 66
+Indices: 132
+Texture: .\textures\concrete.jpg
+Initializing texture: .\textures\concrete.jpg
+.\textures\concrete.jpg loading successful
+
+LOADING OBJECT: cstairs.obj
+
+Mesh name: 
+Vertices: 266
+Normals: 266
+UVs: 266
+Indices: 966
+Texture: .\textures\seamless_wood.jpg
+Initializing texture: .\textures\seamless_wood.jpg
+.\textures\seamless_wood.jpg loading successful
+
+Mesh name: 
+Vertices: 140
+Normals: 140
+UVs: 140
+Indices: 210
+Texture: .\textures\wood_seamless.jpg
+Initializing texture: .\textures\wood_seamless.jpg
+.\textures\wood_seamless.jpg loading successful
+
+LOADING OBJECT: amenemhat.obj
+
+Mesh name: 
+Vertices: 977
+Normals: 977
+UVs: 977
+Indices: 3639
+Texture: .\textures\tex_1.jpg
+Initializing texture: .\textures\tex_1.jpg
+.\textures\tex_1.jpg loading successful
+
+Mesh name: 
+Vertices: 6439
+Normals: 6439
+UVs: 6439
+Indices: 6594
+Texture: .\textures\tex_1.jpg
+Initializing texture: .\textures\tex_1.jpg
+.\textures\tex_1.jpg loading successful
+
+Mesh name: 
+Vertices: 22195
+Normals: 22195
+UVs: 22195
+Indices: 103014
+Texture: .\textures\tex_0.jpg
+Initializing texture: .\textures\tex_0.jpg
+.\textures\tex_0.jpg loading successful
+
+Mesh name: 
+Vertices: 1965
+Normals: 1965
+UVs: 1965
+Indices: 2620
+Texture: .\textures\tex_0.jpg
+Initializing texture: .\textures\tex_0.jpg
+.\textures\tex_0.jpg loading successful
+
+Mesh name: 
+Vertices: 11105
+Normals: 11105
+UVs: 11105
+Indices: 11625
+Texture: .\textures\tex_0.jpg
+Initializing texture: .\textures\tex_0.jpg
+.\textures\tex_0.jpg loading successful
+
+LOADING OBJECT: cube.obj
+
+Mesh name: 
+Vertices: 24
+Normals: 24
+UVs: 0
+Indices: 36
+No texture
+
+LOADING OBJECT: sphere_bulb1.obj
+
+Mesh name: 
+Vertices: 482
+Normals: 482
+UVs: 0
+Indices: 2880
+No texture
+
+LOADING OBJECT: sphere_bulb2.obj
+
+Mesh name: 
+Vertices: 482
+Normals: 482
+UVs: 0
+Indices: 2880
+No texture
+
+LOADING OBJECT: sphere_bulb3.obj
+
+Mesh name: 
+Vertices: 482
+Normals: 482
+UVs: 0
+Indices: 2880
+No texture
+
+LOADING OBJECT: sphere_bulb4.obj
+
+Mesh name: 
+Vertices: 482
+Normals: 482
+UVs: 0
+Indices: 2880
+No texture
+
+LOADING OBJECT: cone_bulb1.obj
+
+Mesh name: 
+Vertices: 128
+Normals: 128
+UVs: 128
+Indices: 498
+No texture
+
+LOADING OBJECT: cone_bulb2.obj
+
+Mesh name: 
+Vertices: 33
+Normals: 33
+UVs: 0
+Indices: 186
+No texture
+
+LOADING OBJECT: cone_bulb3.obj
+
+Mesh name: 
+Vertices: 33
+Normals: 33
+UVs: 0
+Indices: 186
+No texture
+
+LOADING OBJECT: cone_bulb4.obj
+
+Mesh name: 
+Vertices: 33
+Normals: 33
+UVs: 0
+Indices: 186
+No texture

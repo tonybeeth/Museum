@@ -32,7 +32,7 @@ cb;// Center of bounding box obtained from object
 
 GLuint program;
 
-// Global lighting initializations
+//Global directional Light
 vec4 light_position(0.0, 0.0, 0.0, 1.0);//infinite light source ie vector
 vec3 light_ambient(0.3, .3, .3);
 vec3 light_diffuse(1., 1., 1.);
@@ -252,10 +252,13 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 	//create new vector with bounding box end points in frustum coordinates
 	for (const vec3 pt : boundBox)
 	{
+		//transform bounding box point
 		frustumPt = PMV*pt;
 
+		//normalize transformed point
 		frustumPt /= abs(frustumPt.w);
 
+		//get minx and maxs
 		minBox.x = min(minBox.x, frustumPt.x);
 		minBox.y = min(minBox.y, frustumPt.y);
 		minBox.z = min(minBox.z, frustumPt.z);
@@ -264,6 +267,7 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 		maxBox.y = max(maxBox.y, frustumPt.y);
 		maxBox.z = max(maxBox.z, frustumPt.z);
 	}
+	//get maximum and minimum points for intersection
 	minIntersect.x = max(GLfloat(-1), minBox.x);
 	minIntersect.y = max(GLfloat(-1), minBox.y);
 	minIntersect.z = max(GLfloat(-1), minBox.z);
@@ -272,6 +276,7 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 	maxIntersect.y = min(GLfloat(1), maxBox.y);
 	maxIntersect.z = min(GLfloat(1), maxBox.z);
 
+	//Check if intersection is a valid box
 	if (maxIntersect.x < minIntersect.x || maxIntersect.y < minIntersect.y || maxIntersect.z < minIntersect.z) {
 		return false;
 	}
@@ -279,7 +284,9 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 	return true;
 }
 
-bool  fcull(const mat4& PMV, const vector<vec3>& boundBox)
+
+//dummy frustum culling method
+bool fcull(const mat4& PMV, const vector<vec3>& boundBox)
 {
 	return true;
 }
@@ -367,23 +374,35 @@ keyboard(unsigned char key, int x, int y)
 		break;
 
 		//Toggle back and forth from wireframe to shading
-	case 'w':
+	case 'L':
 		if (wirestate)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		wirestate = (wirestate) ? false : true;
 		break;
+		
+	case 'w': case 'W':
+		camera.move(Camera::FORWARD);
+		break;
+
+	case 'a': case'A':
+		camera.move(Camera::LEFT);
+		break;
+	case 's': case'S':
+		camera.move(Camera::BACKWARD);
+		break;
+
+	case'd': case'D':
+		camera.move(Camera::RIGHT);
+		break;
+	case 'b': case'B':
+		camera.Balance();
+		break;
 
 	case 033: // Escape Key
 	case 'q': case 'Q':
 		exit(EXIT_SUCCESS);
-		break;
-	case 'p':
-		camera.move(Camera::UP);
-		break;
-	case 'P':
-		camera.move(Camera::DOWN);
 		break;
 	case '0':
 		UseDirLight = !UseDirLight;
@@ -397,7 +416,6 @@ keyboard(unsigned char key, int x, int y)
 void
 mouse(int button, int state, int x, int y)
 {
-	camera.updateMouse(x, y);
 	Oldx = x; Oldy = y;
 	switch (button) {
 	case GLUT_LEFT_BUTTON:   LeftButtonDown = (state == GLUT_DOWN) ? TRUE : FALSE; Oldy = y;   break;
@@ -409,9 +427,8 @@ void MouseMotion(int x, int y)
 	// If button1 pressed
 	if (LeftButtonDown)
 	{
-		camera.Pitch((y - Oldy) / 1000.0);
-		camera.Yaw((x - Oldx) / 1000.0);
-		//camera.mouseRotate(x, y);
+		camera.Pitch((y - Oldy) / 2000.0);
+		camera.Yaw((x - Oldx) / 2000.0);
 	}
 	if (MiddleButtonDown)
 	{
@@ -450,16 +467,16 @@ void specialKeyFunction(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_RIGHT:
-		camera.move(Camera::RIGHT);
+		camera.Yaw(-1 / 200.0);
 		break;
 	case GLUT_KEY_LEFT:
-		camera.move(Camera::LEFT);
+		camera.Yaw(1 / 200.0);
 		break;
 	case GLUT_KEY_UP:
-		camera.move(Camera::FORWARD);
+		camera.Pitch(1 / 100.0);
 		break;
 	case GLUT_KEY_DOWN:
-		camera.move(Camera::BACKWARD);
+		camera.Pitch(-1 / 100.0);
 		break;
 	case GLUT_KEY_PAGE_UP:
 		camera.move(Camera::UP);
@@ -475,13 +492,16 @@ int
 main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
-	glutSetOption(GLUT_MULTISAMPLE, 8);
+	glutSetOption(GLUT_MULTISAMPLE, 4);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(512, 512);
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("Virtual Museum");
 	glEnable(GLUT_MULTISAMPLE);
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POLYGON_SMOOTH);
 
 	glewInit();
 	init();

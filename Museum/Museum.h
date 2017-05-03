@@ -5,6 +5,7 @@
 #pragma once
 #include"Object.h"
 #include<fstream>
+#include<tuple>
 
 class Museum
 {
@@ -24,7 +25,7 @@ private:
 	GLuint program, ModelViewLoc, ProjectionLoc;
 
 	//vector containing data of modularized ojects
-	vector<vector<pair<vec3, vec3>>> modularData;
+	vector<vector<tuple<vec3, vec3, vec3>>> modularData;
 
 	//vector of Light properties
 	vector<vec3> LightAmbient, LightDiffuse, LightSpecular;
