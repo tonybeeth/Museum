@@ -13,21 +13,7 @@ Museum::Museum()
 }
 
 /*************************************************************
-**Function to Load textures for frames in the museum
-**Requires a vector of strings containing the file names for
-	the images to be used as textures
-*************************************************************/
-void Museum::LoadFrameTextures(vector<string>& frameImages)
-{
-	cout << "Loading Museum Frame Textures..." << endl;
-
-	for (const string& imgName : frameImages) {
-		frameTextures.push_back(Texture((".\\textures\\frameImages\\"+imgName).c_str(), GL_TEXTURE4));
-	}
-}
-
-/*************************************************************
-**Function to Load objects an textures in the museum
+**Function to Load objects and textures in the museum
 **Requires the shader program to draw this museum
 *************************************************************/
 void Museum::Load(GLuint program)
@@ -35,55 +21,29 @@ void Museum::Load(GLuint program)
 	this->program = program;
 	glUseProgram(program);
 
-	//vector of filenames for models
+	//Create objects for models
 	/*Modularized data are the first set of models. (This is important to the implementation of the museum).
 	  The order of the file names must be the same as the order of the enums in the header file.
 	*/
-	vector<string> objNames = { "wall.obj", "door.obj", "lamp_holder.obj", "woodBench.obj", "Frame-1.obj", 
-		"base.obj", "30-ts-serpent.obj", "Xiuhcoatl.obj", "SasukeSusanoo.obj", "YinYangSusanoo.obj", 
-		"Mask_Statue.obj", "stairs.obj", "cstairs.obj", "amenemhat.obj", "cube.obj" };
+	models = { "wall.obj", "door.obj", "lamp_holder.obj", "woodBench.obj", "Frame-1.obj",
+		"sphere_bulb.obj", "cone_bulb.obj", "base.obj", "30-ts-serpent.obj", "Xiuhcoatl.obj",
+		"SasukeSusanoo.obj", "YinYangSusanoo.obj", "Mask_Statue.obj", "stairs.obj", "cstairs.obj",
+		"amenemhat.obj" };
 
-	//object file names for lamps
-	vector<string> LightSourceNames = { "sphere_bulb1.obj", "sphere_bulb2.obj", "sphere_bulb3.obj",
-		"sphere_bulb4.obj","cone_bulb1.obj", "cone_bulb2.obj", "cone_bulb3.obj", "cone_bulb4.obj"
+	//Create frame textures
+	string dir = ".\\textures\\frameImages\\";
+	//I'm using different texture units just to verify that the texture object works well for all units
+	frameTextures = { {(dir+"mendelev.jpg").c_str(), GL_TEXTURE1}, {(dir+"lastSupper.jpg").c_str(), GL_TEXTURE2},
+		{(dir+"mozart.jpg").c_str(), GL_TEXTURE3}, {(dir+"norton.jpg").c_str(), GL_TEXTURE4 }, 
+		{ (dir+"davinci.jpg").c_str(), GL_TEXTURE5 }, { (dir+"ouroboros.jpg").c_str(), GL_TEXTURE6 },
+		{(dir+"pinterest.jpg").c_str(), GL_TEXTURE7}, {(dir+"benleader.jpg").c_str(), GL_TEXTURE8},
+		{(dir+"2monks.jpg").c_str(), GL_TEXTURE9}, {(dir+"yamamoto.png").c_str(), GL_TEXTURE10},
+		{(dir+"sasuke.jpg").c_str(), GL_TEXTURE11}, {(dir+"archer.jpg").c_str(), GL_TEXTURE12},
+		{(dir+"hand.jpg").c_str(), GL_TEXTURE13}, {(dir+"hitler.jpg").c_str(), GL_TEXTURE14}
 	};
 
-	//image names for images on frames
-	vector<string> frameImages = { "mendelev.jpg", "lastSupper.jpg", "mozart.jpg", 
-		"norton.jpg", "davinci.jpg", "ouroboros.jpg", "pinterest.jpg", "benleader.jpg", 
-		"2monks.jpg", "yamamoto.png", "sasuke.jpg", "archer.jpg", "hand.jpg", "hitler.jpg" };
-
 	//Gems around yin yang susanoo
-	vector<string> gemNames = { "Gem.obj", "Gem2.obj", "Gem3.obj", "Gem4.obj" };
-	
-	//add models of gems
-	for (string& str : gemNames) {
-		Gems.push_back(str.c_str());
-	}
-
-	//add models to vector of Objects
-	for (string &str : objNames) {
-		models.push_back(Object(str.c_str()));
-	}
-
-	//add light data
-	for (string &str : LightSourceNames) {
-		Lamps.push_back(Object(str.c_str()));
-		LightPosition.push_back(Lamps.back().BoxCenter());
-
-		LightAmbient.push_back(vec3(0.5, 0.5, 0.5));
-		LightDiffuse.push_back(vec3(0.5, 0.5, 0.5));
-		LightSpecular.push_back(vec3(0.4, .4, .4));
-	}
-
-	//set all lights to be initially active
-	LightStatus.resize(LightSourceNames.size(), true); 
-
-	//Load frame textures
-	LoadFrameTextures(frameImages);
-
-	//read modular data
-	readModularData("modular.dat");
+	Gems = { "Gem.obj", "Gem2.obj", "Gem3.obj", "Gem4.obj" };
 
 	//Load Gems
 	for (Object& gem : Gems) {
@@ -95,11 +55,20 @@ void Museum::Load(GLuint program)
 		model.LoadGPU(program);
 	}
 
-	//Load lamps
-	for (Object& lamp : Lamps) {
-		lamp.LoadGPU(program);
-	}
+	//read modular data: THIS MUST BE DONE AFTER THE MODELS HAVE BEEN LOADED
+	ReadModularData("modular.dat");
 
+	//The modular data must be read first so that the LightPosition is populated
+		//before this can work
+	LightStatus.resize(LightPosition.size(), true); //set all lights to be initially active
+
+	//Set point light properties: THIS CAN BE DONE INDIVIDUALLY (OR SET FROM THE MODULAR DATA FILE)
+	//TO GIVE EACH LIGHT A DIFFERENT PROPERTY.
+	for (int i = 0; i < LightPosition.size(); ++i) {
+		LightAmbient.push_back(vec3(0.5, 0.5, 0.5));
+		LightDiffuse.push_back(vec3(0.5, 0.5, 0.5));
+		LightSpecular.push_back(vec3(0.4, .4, .4));
+	}
 }
 
 /**************************************************************************
@@ -107,7 +76,7 @@ void Museum::Load(GLuint program)
 **Requires the draw mode, the modelview location in the shader, a function
 	to determine if objects are to be drawn based on their bounding box location
 **************************************************************************/
-void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const mat4&, const vector<vec3>&))
+void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*FrustumIntersect)(const mat4&, const vector<vec3>&))
 {
 	//Use program
 	glUseProgram(program);
@@ -115,17 +84,17 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 	vector<vec3> LAmb, LDif, LSpec;
 	vector<vec4> MVLightPosition;
 
-	//Get active light materials and position
+	//Get enabled lights' materials and position
 	for (int i = 0; i < LightStatus.size(); ++i){
 		if (LightStatus[i]) {
 			LAmb.push_back(LightAmbient[i]);
 			LDif.push_back(LightDiffuse[i]);
 			LSpec.push_back(LightSpecular[i]);
-			MVLightPosition.push_back(model_view*LightPosition[i]); //transform light position as well
+			MVLightPosition.push_back(model_view*LightPosition[i]); //transform light position
 		}
 	}
 
-	//Send active lights info to shader
+	//Send enabled lights info to shader
 	glUniform1i(glGetUniformLocation(program, "NumLights"), MVLightPosition.size());
 	if (MVLightPosition.size() > 0) {
 		glUniform3fv(glGetUniformLocation(program, "LightAmbient"), LAmb.size(), LAmb[0]);
@@ -154,7 +123,7 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 			//Rotate SERPENTJET jet around museum
 			mat4 RY = Translate(models[BASE].centerBox.x, 0, models[BASE].centerBox.z)*RotateY(rotAngle);
 			mat4 PMVR = PMV*RY;
-			if (frustumCull(PMVR, models[i].boundBox)) {
+			if (FrustumIntersect(PMVR, models[i].boundBox)) {
 				glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view*RY);
 				models[i].Draw(mode);
 				glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
@@ -164,7 +133,7 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 			//Rotate Ying Yang Susanoo about its axis
 			mat4 TRT = Translate(models[YSUSANOO].centerBox)*RotateY(-rotAngle)*Translate(-models[YSUSANOO].centerBox);
 			mat4 PMVTRT = PMV*TRT;
-			if (frustumCull(PMVTRT, models[i].boundBox)) {
+			if (FrustumIntersect(PMVTRT, models[i].boundBox)) {
 				glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view*TRT);
 				models[i].Draw(mode);
 				glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
@@ -172,15 +141,10 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 		}
 		else {
 			//Apply frustum cull and draw models
-			if (frustumCull(PMV, models[i].boundBox)) {
+			if (FrustumIntersect(PMV, models[i].boundBox)) {
 				models[i].Draw(mode);
 			}
 		}
-	}
-
-	//draw lamps
-	for (Object& lamp : Lamps) {
-		lamp.Draw(mode);
 	}
 	
 	mat4 PMVT, TRANSFORM;
@@ -205,13 +169,13 @@ void Museum::Draw(GLenum mode, GLuint &ModelViewLoc, bool(*frustumCull)(const ma
 			//send modelview*transform matrix to shader
 			glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view*TRANSFORM);
 			//Test for culling and draw model
-			if (frustumCull(PMVT, models[i].boundBox)) {
+			if (FrustumIntersect(PMVT, models[i].boundBox)) {
 				models[i].Draw(mode);
 			}
 		}
 	}
 
-	//Update angle and Attenuation values for gems
+	//Update angle for jet and Attenuation values for gems
 	GemAtt += DGemAtt;
 	if (GemAtt > 0.00500000 || GemAtt < 0.00000000) {
 		DGemAtt *= -1;
@@ -250,7 +214,7 @@ void Museum::keyboardFunction(unsigned char key, int x, int y)
 **Requires the file containing location and rotation data for 
 	duplicate models
 *************************************************************/
-void Museum::readModularData(const char* filename)
+void Museum::ReadModularData(const char* filename)
 {
 	ifstream infile(filename);
 	if (!infile) {
@@ -263,14 +227,13 @@ void Museum::readModularData(const char* filename)
 
 	cout << "\nLoading modular data from file: " << filename << endl;
 	string modName, meshName;
-	tuple<vec3, vec3, vec3> modData;
 	vec3 loc, rot, scale;
 
 	char c;
 	for (int i = 0; i < NumModulars; i++) {
 		infile >> modName;
 		cout << modName << endl;
-
+		
 		c = ' ';
 		while (c != '\n' && infile >> meshName)
 		{
@@ -286,11 +249,17 @@ void Museum::readModularData(const char* filename)
 			infile >> scale.x >> scale.y >> scale.z;
 
 			modularData[i].push_back(make_tuple(loc, rot, scale));
+
+			if (i == SPHERE_BULB || i == CONE_BULB) {
+				//The centers of the light bulbs are the position of the point light sources
+				//THIS MUST BE DONE AFTER THE BULB MODEL(S) HAVE BEEN LOADED
+				LightPosition.push_back(Translate(loc)*RotateX(rot.x)*RotateY(rot.y)*
+					RotateZ(rot.z)*Scale(scale)*models[i].centerBox);
+			}
 			infile.ignore();
 			c = infile.peek();
 		}
 	}
-	int a = 0;
 }
 
 

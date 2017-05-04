@@ -4,7 +4,7 @@ import math
 f = open("modular.dat", "w")
 
 baseObj = None
-objBaseNames = ["brick_wall", "brick_door", "lamp_holder", "Bench", "nFrame"]#,"bulb", "Cone"]
+objBaseNames = ["brick_wall", "brick_door", "lamp_holder", "Bench", "nFrame", "sphere_bulb", "Cone_bulb"]#,"bulb", "Cone"]
 f.write(str(len(objBaseNames))+'\n')
 #primary location of objects assumed to be the origin(0,0,0)
 

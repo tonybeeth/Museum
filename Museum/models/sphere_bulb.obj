@@ -1,7 +1,7 @@
 # Blender v2.78 (sub 0) OBJ File: 'new_plan2.blend'
 # www.blender.org
 mtllib sphere_bulb.mtl
-o bulb_Sphere
+o sphere_bulb_Sphere
 v 0.017906 0.461426 -0.090020
 v 0.035124 0.434653 -0.176580
 v 0.050992 0.391178 -0.256354

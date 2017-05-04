@@ -1,3 +1,5 @@
+/*Texture.h: Header file for texture Object*/
+
 #ifndef TEXTURE_H
 #define TEXTURE_H
 

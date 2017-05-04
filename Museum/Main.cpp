@@ -7,9 +7,7 @@
 #include"Museum.h"
 #include"Camera.h"
 #include"SkyBox.h"
-#include<ctime>
 #include<cstdlib>
-#include"GLSLProgram.h"
 
 #pragma comment(lib,"glew32.lib")
 #pragma comment(lib,"SOIL.lib")
@@ -27,10 +25,7 @@ bool ortho = false;//select the perspective matrix to start with
 string  projName = "Perspective";//used in the display window title
 GLfloat aspect = 1.0, pfar, pnear;//use in perspective projection
 GLfloat bmax;// The maximum width of the three directions of the bounding box
-vec4 eye, //eye position for perspective projections
-cb;// Center of bounding box obtained from object
-
-GLuint program;
+vec4 cb;// Center of bounding box obtained from object
 
 //Global directional Light
 vec4 light_position(0.0, 0.0, 0.0, 1.0);//infinite light source ie vector
@@ -44,149 +39,16 @@ vec3 light_specular(0.4, .4, .4);
 // Also note that the loaded models better not overfile the capacity of the GPU card
 
 Museum museum;
-bool SWITCH = true;
 Camera camera;
 SkyBox skybox;
-Object sphere;
-#define NUM_PARTICLES 1024*1024  //number of particles to move
-#define WORK_GROUP_SIZE 128		//number of work items per work group
-GLuint particlesVao;
-GLuint posSSbo, velSSbo, colSSbo;
+GLuint program;
+
+//Variables to switch between directional and point lights
 GLuint UseDirLightLoc;
 bool UseDirLight = false;
-GLSLProgram csProgram; //compute shader program
 
-void SetupParticles()
-{
-	//generate and bind vao for particles
-	glGenVertexArrays(1, &particlesVao);
-	glBindVertexArray(particlesVao);
+bool UseFrustumCull = true; //Initially set to frustum cull
 
-	//generate and bind buffers for particles
-	glGenBuffers(1, &posSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, posSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; //the invalidate makes a big difference when rewriting???
-	vec4* points = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-
-	float FMIN = -1.0, FMAX = 1.0;
-	srand(time(NULL));//set seed
-
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		points[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].w = i;
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	FMIN = 1.0, FMAX = 2.0;
-	//generate and bind buffer for particles' velocities
-	glGenBuffers(1, &velSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, velSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	vec4* vels = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-	FMIN = 0.0, FMAX = 1.0;
-	srand(time(NULL));//set seed
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		vels[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		vels[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		vels[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		vels[i].w = 1;
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	//generate and bind buffer for particles' color
-	glGenBuffers(1, &colSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, colSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	vec4* cols = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-
-	srand(time(NULL));//set seed
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		cols[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].w = 1;
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	//Initialize compute shader program
-	csProgram.CompileShader("cshader.glsl", GL_COMPUTE_SHADER);
-
-	glBindVertexArray(0);
-}
-
-void SetupFountain()
-{
-	//generate and bind vao for particles
-	glGenVertexArrays(1, &particlesVao);
-	glBindVertexArray(particlesVao);
-
-	//generate and bind buffers for particles
-	glGenBuffers(1, &posSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, posSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; //the invalidate makes a big difference when rewriting???
-	vec4* points = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-
-	float FMIN = -1.0, FMAX = 1.0;
-	srand(time(NULL));//set seed
-
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		points[i].x =  FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].z =  FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		points[i].w = i;
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	FMIN = 1.0, FMAX = 1.5;
-	//generate and bind buffer for particles' velocities
-	glGenBuffers(1, &velSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, velSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	vec4* vels = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-	FMIN = -1000, FMAX = 2000;
-
-	GLfloat angle = M_PI/4.0;
-	srand(time(NULL));//set seed
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		vels[i].x = 2 * cos(angle) + .5* (FMIN+ static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN))))-.25;
-		vels[i].y = 2.0 + .5* (FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)))) - .25;
-		vels[i].z = 2 * sin(angle) + .5* (FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)))) - .25;
-		vels[i].w = 1;
-	}
-
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	//generate and bind buffer for particles' color
-	glGenBuffers(1, &colSSbo);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, colSSbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, NUM_PARTICLES * sizeof(vec4), NULL, GL_STATIC_DRAW);
-
-	vec4* cols = (vec4*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, NUM_PARTICLES * sizeof(vec4), bufMask);
-	FMIN = 0.0; FMAX = 1.0;
-	srand(time(NULL));//set seed
-	for (int i = 0; i < NUM_PARTICLES; ++i) {
-		cols[i].x = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].y = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].z = FMIN + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (FMAX - FMIN)));
-		cols[i].w = 1;
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-
-	//Initialize compute shader program
-	csProgram.CompileShader("fountshader.glsl", GL_COMPUTE_SHADER);
-	//csProgram.CompileShader("cshader.glsl", GL_COMPUTE_SHADER);
-
-	glBindVertexArray(0);
-}
 
 //OpenGL initialization
 void
@@ -199,16 +61,14 @@ init()
 	glUseProgram(program);
 
 	museum.Load(program);
-	//sphere.LoadFile("sphere.obj");
-	//sphere.Load(program);
 	
-	bmax = museum.models[5].MaxWidth();
-	cb = museum.models[5].BoxCenter();
-	//bmax = sphere.MaxWidth();
-	//cb = sphere.BoxCenter();
+	//Currently hacking to get the max width and center of museum
+	bmax = museum.models[7].MaxWidth();
+	cb = museum.models[7].BoxCenter();
 
-	//camera = Camera(vec3(0.0, 0.0, cb.z+bmax), vec3(0.0, 0.0, cb.z));
-	camera = Camera(vec3(0.0, 2, cb.z + bmax), vec3(0.0,2,cb.z-bmax));
+	//Initialize camera
+	camera = Camera(vec3(0.0, 2, cb.z + bmax), vec3(0.0,2,cb.z));
+	//frustum's near and far planes
 	pnear = .01;
 	pfar = pnear + 10 * -bmax;
 
@@ -228,24 +88,28 @@ init()
 	ModelViewLoc = glGetUniformLocation(program, "ModelView");
 	ProjectionLoc = glGetUniformLocation(program, "Projection");
 	
-	//SetupParticles();
-	//SetupFountain();
-
-	glEnable(GL_DEPTH_TEST);// Turn this off and see what happens. 
-
-	//Face culling
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glFrontFace(GL_CCW);
+	// Makes sure objects that are closer to the eye are viewed over objects farther from it
+	//Turn it off and see what happens
+	glEnable(GL_DEPTH_TEST);
 
 	glClearColor(1.0, 1.0, 1.0, 1.0);// Set clear color to white
 }
 
 /*-------------------------------------------------------------
-Frustum Culling using AABB intersection method
+Frustum Culling using AABB intersection method:
+	Requires the projection*modelview matrix, and a vector
+	with 8 points defining the bounding box of the object
+
+	Returns true if there is an intersection between the bounding 
+	box and the viewing frustum, else false;
 -------------------------------------------------------------*/
-bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
+bool FrustumIntersect(const mat4& PMV, const vector<vec3>& boundBox)
 {
+	//If frustum culling is disabled, then return true for all objects
+	if (UseFrustumCull == false) {
+		return true;
+	}
+
 	vec4 frustumPt;
 	vec3 minBox(FLT_MAX), maxBox(-FLT_MAX), maxIntersect, minIntersect;
 
@@ -284,42 +148,6 @@ bool frustumCull(const mat4& PMV, const vector<vec3>& boundBox)
 	return true;
 }
 
-
-//dummy frustum culling method
-bool fcull(const mat4& PMV, const vector<vec3>& boundBox)
-{
-	return true;
-}
-
-void displayParticles()
-{
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, posSSbo);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, velSSbo);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, colSSbo);
-
-	//Invoke compute shader
-	csProgram.Use();
-	glDispatchCompute(NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1);
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-
-	//render updated values
-	glUseProgram(program);
-	glUniform1i(glGetUniformLocation(program, "particle"), true);
-
-	glBindVertexArray(particlesVao);
-	glBindBuffer(GL_ARRAY_BUFFER, posSSbo);
-	GLuint position_loc = glGetAttribLocation(program, "vPosition");
-	glEnableVertexAttribArray(position_loc);
-	glVertexAttribPointer(position_loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-	//glVertexPointer(4, GL_FLOAT, 0, (void*)0);
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	glDrawArrays(GL_POINTS, 0, NUM_PARTICLES);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	glUniform1i(glGetUniformLocation(program, "particle"), false);
-}
-
 //----------------------------------------------------------------------------
 long long frame = 0, curTime, timebase, fps;
 void
@@ -327,17 +155,16 @@ display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//Step the camera to apply any changes
 	camera.Step();
+
+	//Get model view matrix
 	model_view = LookAt(camera.position(), camera.viewPosition(), camera.Up());
-	//glUseProgram(program);
-	//glUniformMatrix4fv(ModelViewLoc, 1, GL_TRUE, model_view);
+
+	//draw skybox first
 	skybox.Draw();
-
-	//glUseProgram(program);
-	museum.Draw(GL_TRIANGLES, ModelViewLoc, &frustumCull);
-	//sphere.Draw(GL_TRIANGLES);
-
-	//displayParticles();
+	//Draw the museum (and all models in it)
+	museum.Draw(GL_TRIANGLES, ModelViewLoc, &FrustumIntersect);
 
 	//Build the window header with time and projection info
 	frame++;
@@ -360,17 +187,9 @@ void
 keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
-		// reset the position
+		// reset the position to the front of the museum
 	case 'r':
 		camera = Camera(vec3(0.0, 2, cb.z + bmax), vec3(0.0, 2, cb.z - bmax));
-		break;
-
-		// change the eye position along the z axis
-	case 'Z':
-		camera.move(Camera::FORWARD);
-		break;
-	case 'z':
-		camera.move(Camera::BACKWARD);
 		break;
 
 		//Toggle back and forth from wireframe to shading
@@ -381,34 +200,37 @@ keyboard(unsigned char key, int x, int y)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		wirestate = (wirestate) ? false : true;
 		break;
-		
-	case 'w': case 'W':
-		camera.move(Camera::FORWARD);
+
+	//Toggle back and forth from using frustum culling
+	case 'f':case 'F':
+		UseFrustumCull = !UseFrustumCull;
+		if (UseFrustumCull)
+			cout << "Frustum culling Enabled" << endl;
+		else
+			cout << "Frustum culling Disabled" << endl;
 		break;
 
-	case 'a': case'A':
-		camera.move(Camera::LEFT);
-		break;
-	case 's': case'S':
-		camera.move(Camera::BACKWARD);
-		break;
-
-	case'd': case'D':
-		camera.move(Camera::RIGHT);
-		break;
+	//Balance the camera.
+		//This helps if you rotate the camera too much and need to operate
+		//on the same Y level as the position you are looking at
 	case 'b': case'B':
 		camera.Balance();
 		break;
 
+	//Quit the program
 	case 033: // Escape Key
 	case 'q': case 'Q':
 		exit(EXIT_SUCCESS);
 		break;
+
+	//Toggle back and forth from using directional light to point lights
 	case '0':
 		UseDirLight = !UseDirLight;
 		glUniform1i(UseDirLightLoc, UseDirLight);
 		break;
 	}
+
+	//Send to museum to handle any extra functions
 	museum.keyboardFunction(key, x, y);
 }
 
@@ -422,11 +244,13 @@ mouse(int button, int state, int x, int y)
 	case GLUT_MIDDLE_BUTTON:  MiddleButtonDown = (state == GLUT_DOWN) ? TRUE : FALSE; Oldy = y;  break;
 	}
 }
+
 void MouseMotion(int x, int y)
 {
 	// If button1 pressed
 	if (LeftButtonDown)
 	{
+		//Perform some rotations
 		camera.Pitch((y - Oldy) / 2000.0);
 		camera.Yaw((x - Oldx) / 2000.0);
 	}
@@ -455,28 +279,30 @@ void reshape(int width, int height) {
 	glViewport(0, 0, width, height);
 	aspect = GLfloat(width) / height;
 
+	//Get projection matrix and send it over
 	projection = Perspective(projectionAngle, aspect, pnear, pfar);
 	glUniformMatrix4fv(ProjectionLoc, 1, GL_TRUE, projection);
 }
 
 
-//----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------
+Left, Right, Forward, Backward, Up, and Down movements in the museum
+-----------------------------------------------------------------------------*/
 void specialKeyFunction(int key, int x, int y)
 {
-	SWITCH = true;
 	switch (key)
 	{
 	case GLUT_KEY_RIGHT:
-		camera.Yaw(-1 / 200.0);
+		camera.move(Camera::RIGHT);
 		break;
 	case GLUT_KEY_LEFT:
-		camera.Yaw(1 / 200.0);
+		camera.move(Camera::LEFT);
 		break;
 	case GLUT_KEY_UP:
-		camera.Pitch(1 / 100.0);
+		camera.move(Camera::FORWARD);
 		break;
 	case GLUT_KEY_DOWN:
-		camera.Pitch(-1 / 100.0);
+		camera.move(Camera::BACKWARD);
 		break;
 	case GLUT_KEY_PAGE_UP:
 		camera.move(Camera::UP);
@@ -492,12 +318,14 @@ int
 main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
+	//activate multisampling
 	glutSetOption(GLUT_MULTISAMPLE, 4);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(512, 512);
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow("Virtual Museum");
+	//More multisampling and smoothing
 	glEnable(GLUT_MULTISAMPLE);
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);

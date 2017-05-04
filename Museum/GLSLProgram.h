@@ -1,3 +1,4 @@
+/*GLSLProgram Class: A modified version of the functions from Angel files*/
 
 #ifndef GLSLPROGRAM_H
 #define GLSLPROGRAM_H

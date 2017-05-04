@@ -37,7 +37,10 @@ public:
 	void Step();
 	void SetSpeed(float s);
 	vec3 Up();
-	void Balance(); //sets the camera's y position to the same as the view position's
+
+	//sets the camera's y position to the same as the view position's
+		//Also updates the direction and side vectors
+	void Balance(); 
 
 	~Camera();
 };

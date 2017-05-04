@@ -9,6 +9,9 @@ GLSLProgram::~GLSLProgram()
 {
 }
 
+//Read shader source has been modified from what it was in
+//Angel's file. This version uses the ifstream object to prevent
+//junk characters from being read in at the end of the shader source.
 char * GLSLProgram::readShaderSource(const char * shaderFile)
 {
 	ifstream t(shaderFile);
@@ -30,6 +33,7 @@ char * GLSLProgram::readShaderSource(const char * shaderFile)
 	return buf;
 }
 
+//Same code as in Angel's InitShader method to compile a shader
 void GLSLProgram::CompileShader(const char * shaderFileName, GLenum shaderType)
 {
 	filename = string(shaderFileName);
